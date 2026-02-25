@@ -1,0 +1,63 @@
+/* Recommendation.css */
+.slider {
+    width: 80%;
+    margin-top: 200px;
+    margin-left: 100px;
+   
+  }
+  
+  .slide {
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .slide-content {
+    height: 300px;
+    background-size: contain;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .slide-content img{
+    height:100px;
+    background-size: cover;
+  }
+.intro{
+    display: flex;
+    margin-top:50px;
+    justify-content: center;
+    background-color: antiquewhite;
+    align-items: center;
+    align-self: center;
+    font-size:70px;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+  
+  .slide-description {
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 18px;
+  }
+
+  .back-button {
+    position: absolute;
+    left: 10px;
+    top: 30px;
+    /* transform: translateY(-50%); */
+    height: max-content;
+    width: max-content;
+    background-color:black ;
+    border-radius:28%;
+    font-size: 50px;
+    cursor: pointer;
+    color: white;
+  }
+  
+  .back-button:hover {
+    color: white;
+  }
+
+  

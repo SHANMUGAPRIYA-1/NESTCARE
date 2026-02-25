@@ -1,0 +1,78 @@
+/* VaccinationCalendar.css */
+
+/* Calendar container styling */
+.react-calendar {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Navigation styling */
+  .react-calendar__navigation {
+    background-color: #4caf50;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+  
+  .react-calendar__navigation button {
+    color: #fff;
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+  
+  /* Day tiles styling */
+  .react-calendar__tile {
+    height: 50px;
+    text-align: center;
+  }
+  
+  .react-calendar__tile--active,
+  .react-calendar__tile--now {
+    background-color: #ffeb3b;
+    color: #000;
+    border-radius: 50%;
+  }
+  
+  /* Highlight vaccination days */
+  .vaccination-day {
+    background-color: #ff5722;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 50%;
+  }
+  
+  /* Tooltip styling */
+  .vaccination-day p {
+    display: none;
+  }
+  
+  .vaccination-day:hover p {
+    display: block;
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #ddd;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 10;
+    margin-top: -20px;
+    margin-left: -20px;
+  }
+  .download-button {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .download-button:hover {
+    background-color: #45a049;
+  }
