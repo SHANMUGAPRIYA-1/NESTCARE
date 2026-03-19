@@ -1,16 +1,16 @@
 /* eslint-disable react/prop-types */
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import useSpeech from "./useSpeech";
 
-// Animated yoga pose images (replace with actual GIF URLs)
+// Animated yoga pose images
 const yogaImages = [
-  "https://cdnl.iconscout.com/lottie/premium/thumb/girl-doing-pushup-5445986-4562621.gif", // Example GIF for Plank Vinyasa
-  "https://i.pinimg.com/originals/0b/c1/1a/0bc11a0103763d2700f80e915e625902.gif", // Example GIF for Locust Pose
-  "https://images-prod.healthline.com/hlcmsresource/images/topic_centers/Fitness-Exercise/400x400_5_Exercises_for_Anterior_Pelvic_Tilt_Bridge.gif", // Example GIF for Pelvic Tilts
-  "https://www.parents.com/thmb/QSmDZkBRdwjhGQXSRrcdoOLQKvs=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/legs-wide-pose-facb19b9513a4868b98ec0a6b8e0cc69.jpg", // Example GIF for Legs Wide Pose
-  "https://media-cldnry.s-nbcnews.com/image/upload/t_social_share_1200x630_center,f_auto,q_auto:best/newscms/2021_24/1734845/scissor-kicks-kb-main-210617.gif", // Example GIF for Scissors
+  "https://cdnl.iconscout.com/lottie/premium/thumb/girl-doing-pushup-5445986-4562621.gif",
+  "https://i.pinimg.com/originals/0b/c1/1a/0bc11a0103763d2700f80e915e625902.gif",
+  "https://images-prod.healthline.com/hlcmsresource/images/topic_centers/Fitness-Exercise/400x400_5_Exercises_for_Anterior_Pelvic_Tilt_Bridge.gif",
+  "https://www.parents.com/thmb/QSmDZkBRdwjhGQXSRrcdoOLQKvs=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/legs-wide-pose-facb19b9513a4868b98ec0a6b8e0cc69.jpg",
+  "https://media-cldnry.s-nbcnews.com/image/upload/t_social_share_1200x630_center,f_auto,q_auto:best/newscms/2021_24/1734845/scissor-kicks-kb-main-210617.gif",
 ];
 
-// Yoga pose details
 const yogaPoses = [
   {
     name: "Plank Vinyasa",
@@ -39,60 +39,10 @@ const yogaPoses = [
   },
 ];
 
-// Component for displaying a single yoga pose
-const YogaPose = ({ pose, image, backgroundColor }) => (
-  <div
-    style={{
-      backgroundColor,
-      borderRadius: "10px",
-      padding: "20px",
-      marginBottom: "20px",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      display: "flex",
-      alignItems: "center",
-      flexDirection: "column",
-      width: "80%", // Increased width
-      margin: "0 auto", // Center alignment
-    }}
-  >
-    <h2
-      style={{
-        fontFamily: "'Arial', sans-serif",
-        fontSize: "32px",
-        fontWeight: "bold",
-        color: "#333",
-        marginBottom: "10px",
-      }}
-    >
-      {pose.name}
-    </h2>
-    <img
-      src={image}
-      alt={pose.name}
-      style={{
-        width: "100%",
-        height: "auto",
-        maxHeight: "400px",
-        borderRadius: "10px",
-        marginBottom: "10px",
-      }}
-    />
-    <p
-      style={{
-        fontFamily: "'Georgia', serif",
-        fontSize: "20px",
-        color: "#555",
-        textAlign: "center",
-      }}
-    >
-      {pose.benefits}
-    </p>
-  </div>
-);
-
-// Main component to display all yoga poses
 const YogaPosesDisplay = () => {
-  // Define background colors for each pose
+  // ✅ Use FULL speech hook
+  const { speak, stop, pause, resume, isSpeaking, isPaused } = useSpeech();
+
   const backgroundColors = [
     "#FFE0E6",
     "#E0F7FA",
@@ -104,29 +54,47 @@ const YogaPosesDisplay = () => {
   const [currentPoseIndex, setCurrentPoseIndex] = useState(0);
   const [timer, setTimer] = useState(5);
 
+  // ✅ Countdown Timer (clean version)
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setTimer((prevTimer) => prevTimer - 1);
-    }, 1000); // Countdown every second
+      setTimer((prev) => prev - 1);
+    }, 1000);
 
     if (timer === 0) {
-      alert(`Exercise ${currentPoseIndex + 1} completed!`);
+      stop(); // stop speech when pose changes
+
       setCurrentPoseIndex((prevIndex) =>
-        prevIndex === yogaPoses.length - 1 ? 0 : prevIndex + 1
+        prevIndex === yogaPoses.length - 1 ? 0 : prevIndex + 1,
       );
+
       setTimer(5);
     }
 
     return () => clearInterval(intervalId);
-  }, [timer, currentPoseIndex]);
+  }, [timer, stop]);
 
+  // ✅ Stop speech when component unmounts
   useEffect(() => {
-    if (currentPoseIndex === yogaPoses.length - 1 && timer === 0) {
-      alert(
-        "Congratulations! You've successfully completed all exercises!",
-      );
+    return () => {
+      stop();
+    };
+  }, [stop]);
+
+  // ✅ Voice Control Function
+  const handleVoiceControl = () => {
+    const pose = yogaPoses[currentPoseIndex];
+    const text = `${pose.name}. Benefits: ${pose.benefits}`;
+
+    if (!isSpeaking) {
+      speak(text);
+    } else if (isSpeaking && !isPaused) {
+      pause();
+    } else if (isPaused) {
+      resume();
     }
-  }, [currentPoseIndex, timer]);
+  };
+
+  const pose = yogaPoses[currentPoseIndex];
 
   return (
     <div
@@ -147,6 +115,42 @@ const YogaPosesDisplay = () => {
       >
         5 Yoga Poses for Postpartum Abs
       </h1>
+
+      {/* 🔊 Voice Controls */}
+      <div style={{ marginBottom: "20px" }}>
+        <button
+          onClick={handleVoiceControl}
+          style={{
+            padding: "10px 20px",
+            fontSize: "18px",
+            borderRadius: "8px",
+            border: "none",
+            backgroundColor: "#ff5722",
+            color: "white",
+            cursor: "pointer",
+            marginRight: "10px",
+          }}
+        >
+          {!isSpeaking ? "Listen" : isPaused ? "Resume" : "Pause"}
+        </button>
+
+        <button
+          onClick={stop}
+          style={{
+            padding: "10px 20px",
+            fontSize: "18px",
+            borderRadius: "8px",
+            border: "none",
+            backgroundColor: "#f44336",
+            color: "white",
+            cursor: "pointer",
+          }}
+        >
+          Stop
+        </button>
+      </div>
+
+      {/* Timer */}
       <div
         style={{
           fontSize: "48px",
@@ -160,11 +164,33 @@ const YogaPosesDisplay = () => {
       >
         {timer}s
       </div>
-      <YogaPose
-        pose={yogaPoses[currentPoseIndex]}
-        image={yogaImages[currentPoseIndex]}
-        backgroundColor={backgroundColors[currentPoseIndex]}
-      />
+
+      {/* Pose Card */}
+      <div
+        style={{
+          backgroundColor: backgroundColors[currentPoseIndex],
+          borderRadius: "10px",
+          padding: "20px",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          width: "80%",
+          margin: "0 auto",
+        }}
+      >
+        <h2>{pose.name}</h2>
+
+        <img
+          src={yogaImages[currentPoseIndex]}
+          alt={pose.name}
+          style={{
+            width: "100%",
+            maxHeight: "400px",
+            borderRadius: "10px",
+            marginBottom: "10px",
+          }}
+        />
+
+        <p>{pose.benefits}</p>
+      </div>
     </div>
   );
 };

@@ -1,23 +1,36 @@
-
-import PropTypes from 'prop-types';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
-import './VaccinationCalendar.css'
+import PropTypes from "prop-types";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import "./VaccinationCalendar.css";
 
 const VaccinationCalendar = ({ schedule }) => {
-  const tileContent = ({ date, view }) => {
-    if (view === 'month') {
-      const vaccination = schedule.find(
-        (item) => new Date(item.dueDate).toDateString() === date.toDateString()
+  // ✅ Highlight dates that have vaccination
+  const tileClassName = ({ date, view }) => {
+    if (view === "month") {
+      const hasVaccine = schedule.some(
+        (item) => new Date(item.dueDate).toDateString() === date.toDateString(),
       );
-      return vaccination ? <p>{vaccination.vaccine}</p> : null;
+      return hasVaccine ? "vaccine-date" : null;
+    }
+  };
+
+  // ✅ Show vaccine name inside date cell
+  const tileContent = ({ date, view }) => {
+    if (view === "month") {
+      const vaccination = schedule.find(
+        (item) => new Date(item.dueDate).toDateString() === date.toDateString(),
+      );
+
+      return vaccination ? (
+        <div className="vaccine-label">{vaccination.vaccine}</div>
+      ) : null;
     }
   };
 
   return (
-    <Calendar
-      tileContent={tileContent}
-    />
+    <div className="calendar-wrapper">
+      <Calendar tileClassName={tileClassName} tileContent={tileContent} />
+    </div>
   );
 };
 
@@ -26,7 +39,7 @@ VaccinationCalendar.propTypes = {
     PropTypes.shape({
       dueDate: PropTypes.string.isRequired,
       vaccine: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
 };
 

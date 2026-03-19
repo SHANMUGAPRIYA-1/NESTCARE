@@ -1,22 +1,33 @@
-import { useState } from 'react';
-import VaccinationForm from './VaccinationForm';
-import VaccinationCalendar from './VaccinationCalendar';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import VaccinationForm from "./VaccinationForm";
+import VaccinationCalendar from "./VaccinationCalendar";
+import { useNavigate } from "react-router-dom";
+import "./VaccinationSchedule.css";
+
 const VaccinationSchedule = () => {
   const [schedule, setSchedule] = useState([]);
-  const navigate=useNavigate();
-  const goToNutritionPage = () => {
-    navigate('/main');
+  const navigate = useNavigate();
+
+  const goToMainPage = () => {
+    navigate("/main");
   };
+
   return (
-    <div>
-            <button onClick={goToNutritionPage} className="back-button">←</button>
-      <br></br><br></br>
-      <h1>Vaccination Schedule</h1>
-     
-      <VaccinationForm onScheduleGenerated={setSchedule} />
+    <div className="vaccination-container">
+      <button onClick={goToMainPage} className="back-button">
+        ←
+      </button>
+
+      <h1 className="title">Vaccination Schedule</h1>
+
+      <div className="form-section">
+        <VaccinationForm onScheduleGenerated={setSchedule} />
+      </div>
+
       {schedule.length > 0 && (
-        <VaccinationCalendar schedule={schedule} />
+        <div className="calendar-section">
+          <VaccinationCalendar schedule={schedule} />
+        </div>
       )}
     </div>
   );

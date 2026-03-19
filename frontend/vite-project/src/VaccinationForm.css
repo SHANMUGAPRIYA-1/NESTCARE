@@ -2,80 +2,123 @@
 
 /* Form container styling */
 form {
-    background-color: #f9f9f9;
-    padding: 20px;
-    margin: 60px auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    font-family: 'Arial', sans-serif;
+  background-color: #f9f9f9;
+  padding: 20px;
+  margin: 60px auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  font-family: "Arial", sans-serif;
+}
+
+/* Label styling */
+form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Input styling */
+form input[type="date"],
+form input[type="email"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+/* Input focus styling */
+form input[type="date"]:focus,
+form input[type="email"]:focus {
+  border-color: #4caf50;
+  outline: none;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+/* Button styling */
+form button {
+  background-color: #4caf50;
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Button hover styling */
+form button:hover {
+  background-color: #45a049;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  form {
+    padding: 15px;
   }
-  
-  /* Label styling */
+
   form label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #333;
+    margin-bottom: 6px;
   }
-  
-  /* Input styling */
+
   form input[type="date"],
   form input[type="email"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 16px;
+    padding: 8px;
+    font-size: 14px;
   }
-  
-  /* Input focus styling */
-  form input[type="date"]:focus,
-  form input[type="email"]:focus {
-    border-color: #4caf50;
-    outline: none;
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
-  }
-  
-  /* Button styling */
+
   form button {
-    background-color: #4caf50;
-    color: #fff;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    width: 100%;
-    box-sizing: border-box;
+    padding: 10px 18px;
+    font-size: 14px;
   }
-  
-  /* Button hover styling */
-  form button:hover {
-    background-color: #45a049;
-  }
-  
-  /* Responsive design */
-  @media (max-width: 480px) {
-    form {
-      padding: 15px;
-    }
-  
-    form label {
-      margin-bottom: 6px;
-    }
-  
-    form input[type="date"],
-    form input[type="email"] {
-      padding: 8px;
-      font-size: 14px;
-    }
-  
-    form button {
-      padding: 10px 18px;
-      font-size: 14px;
-    }
-  }
-  
+}
+
+.vaccination-form {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 10px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.vaccination-form input {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.vaccination-form button {
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #4caf50;
+  color: white;
+  cursor: pointer;
+}
+
+.vaccination-form button:disabled {
+  background-color: #9e9e9e;
+  cursor: not-allowed;
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
+}
+
+.success {
+  color: green;
+  margin-top: 10px;
+}
