@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -5,11 +6,13 @@ const cors = require("cors");
 
 const Register = require("./models/Register");
 const Vaccination = require("./models/Vaccination"); // ✅ Added
+const exerciseRoutes = require('./routes/exerciseRoutes');
 
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use('/api/exercise', exerciseRoutes);
 
 /* ==============================
    MongoDB Connection

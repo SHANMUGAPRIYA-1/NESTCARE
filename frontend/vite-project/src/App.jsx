@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Nutrition from './Nutrition';
 import WeeklyPlan from './WeeklyPlan';
+import Exercise from './Exercise';
 import Recommendation from './Recommendation';
 import Recipe from './Recipe';
 import WaterTracker from './WaterTracker';
@@ -12,7 +13,10 @@ import './App.css';
 import Home from './Home';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    // Check localStorage for existing user session
+    return !!localStorage.getItem('user');
+  });
 
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
@@ -28,8 +32,9 @@ function App() {
         <Route path="/hydra" element={isAuthenticated ? <WaterTracker /> : <Navigate to="/" />} />
         <Route path="/vaccination-schedule" element={isAuthenticated ? <VaccinationSchedule /> : <Navigate to="/" />} />
         <Route path="/" element={<Login onLoginSuccess={handleLoginSuccess} />} />
-        <Route path="/main" element={isAuthenticated ? <Home /> : <Navigate to="/" />}/>
+        <Route path="/main" element={isAuthenticated ? <Home /> : <Navigate to="/" />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/exercise" element={isAuthenticated ? <Exercise /> : <Navigate to="/" />} />
       </Routes>
     </Router>
   );
