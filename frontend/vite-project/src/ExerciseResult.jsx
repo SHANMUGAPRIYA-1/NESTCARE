@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Confetti from 'react-confetti';
 import './Exercise.css';
 
 const ExerciseResult = ({ exercises, onBack }) => {
@@ -8,6 +9,7 @@ const ExerciseResult = ({ exercises, onBack }) => {
   const [timeLeft, setTimeLeft] = useState(exercises[0]?.durationSeconds || 60);
   const [isFinished, setIsFinished] = useState(false);
   const [allDone, setAllDone] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const beepInterval = useRef(null);
 
   const currentExercise = exercises[currentIndex];
@@ -31,16 +33,26 @@ const ExerciseResult = ({ exercises, onBack }) => {
 
   // Timer Effect
   useEffect(() => {
-    if (timeLeft > 0 && !isFinished) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timer);
+    let interval = null;
+
+    // Only run the timer if it's not finished and not paused
+    if (timeLeft > 0 && !isFinished && !isPaused) {
+      interval = setInterval(() => {
+        setTimeLeft((prevTime) => prevTime - 1);
+      }, 1000);
     } else if (timeLeft === 0 && !isFinished) {
+      // Logic for when time runs out
       setIsFinished(true);
-      // Start looping beep until user clicks 'Next'
       playBeep();
       beepInterval.current = setInterval(playBeep, 1500);
     }
-  }, [timeLeft, isFinished]);
+
+    // This cleanup function is crucial: 
+    // It clears the interval whenever the component updates or pauses
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [timeLeft, isFinished, isPaused]); // Added isPaused to dependencies
 
   const handleNext = () => {
     // Stop beep
@@ -53,6 +65,7 @@ const ExerciseResult = ({ exercises, onBack }) => {
       setCurrentIndex(nextIdx);
       setTimeLeft(exercises[nextIdx].durationSeconds);
       setIsFinished(false);
+      setIsPaused(false);
     } else {
       setAllDone(true);
       // Auto-return home after celebration
@@ -65,6 +78,13 @@ const ExerciseResult = ({ exercises, onBack }) => {
   if (allDone) {
     return (
       <div className="celebration-overlay">
+        <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} numberOfPieces={500} />
+
+        <div className="side-emojis left">🎉</div>
+        <div className="side-emojis right">🎊</div>
+        <div className="side-emojis left-bottom">🥳</div>
+        <div className="side-emojis right-bottom">🍾</div>
+
         <div style={{ fontSize: '100px' }}>🌟</div>
         <h1 className="celebration-text">WELL DONE!</h1>
         <h2 style={{ color: '#fff', fontSize: '32px' }}>ALL EXERCISES COMPLETED!</h2>
@@ -100,7 +120,6 @@ const ExerciseResult = ({ exercises, onBack }) => {
               loop
               muted
               playsInline
-              crossOrigin="anonymous"
               className="exercise-gif"
               style={{ width: '100%', height: '100%', display: 'block' }}
             />
@@ -109,7 +128,6 @@ const ExerciseResult = ({ exercises, onBack }) => {
             <img
               src={currentExercise.gifUrl}
               alt={currentExercise.name}
-              crossOrigin="anonymous"
               className="exercise-gif"
             />
           )}
@@ -131,8 +149,17 @@ const ExerciseResult = ({ exercises, onBack }) => {
         <div className={`timer-circle ${isFinished ? 'finished' : ''}`}>
           {timeLeft}
         </div>
-        <p style={{ color: '#888', margin: 0 }}>
-          {isFinished ? 'Exercise Complete! Click button below to stop beep.' : 'Stay focused... hold the form!'}
+        {!isFinished && (
+          <button
+            className="pause-btn"
+            onClick={() => setIsPaused(!isPaused)}
+          >
+            {isPaused ? '▶ Resume' : '⏸ Pause'}
+          </button>
+        )}
+        <p style={{ color: '#888', margin: '15px 0 0 0' }}>
+          {isFinished ? 'Exercise Complete! Click button below to stop beep.' :
+            isPaused ? 'Timer paused.' : 'Stay focused... hold the form!'}
         </p>
       </div>
 
