@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Nutrition from './Nutrition';
 import WeeklyPlan from './WeeklyPlan';
-import Exercise from './Exercise';
+import ExerciseChoice from './ExerciseChoice';
+import ExerciseUpload from './ExerciseUpload';
+import ExerciseResult from './ExerciseResult';
 import Recommendation from './Recommendation';
 import Recipe from './Recipe';
 import WaterTracker from './WaterTracker';
@@ -34,7 +36,9 @@ function App() {
         <Route path="/" element={<Login onLoginSuccess={handleLoginSuccess} />} />
         <Route path="/main" element={isAuthenticated ? <Home /> : <Navigate to="/" />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/exercise" element={isAuthenticated ? <Exercise /> : <Navigate to="/" />} />
+        <Route path="/exercise" element={<ExerciseChoice />} />
+        <Route path="/exercise/upload" element={<ExerciseUpload />} />
+        <Route path="/exercise/result" element={<ExerciseResult />} />
       </Routes>
     </Router>
   );

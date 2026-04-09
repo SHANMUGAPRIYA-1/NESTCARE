@@ -17,6 +17,7 @@ const exerciseSchema = new mongoose.Schema({
   // Parameters extracted from the uploaded report
   deliveryType:   { type: String, enum: ['normal', 'cesarean'], default: 'normal' },
   postpartumWeek: { type: String, enum: ['1-2', '3-6', '7-12', '13+'], default: '1-2' },
+  baseWeekNumber: { type: Number, default: 1 }, // numeric week at time of upload e.g. 2
   hasBP:          { type: Boolean, default: false },
   hasDiabetes:    { type: Boolean, default: false },
   hasDiastasis:   { type: Boolean, default: false },

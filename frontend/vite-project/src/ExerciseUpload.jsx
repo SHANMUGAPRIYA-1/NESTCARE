@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './Exercise.css';
 
-const ExerciseUpload = ({ onAnalysisComplete }) => {
+const ExerciseUpload = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [extractedData, setExtractedData] = useState(null);
+  const navigate = useNavigate();
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -28,7 +30,6 @@ const ExerciseUpload = ({ onAnalysisComplete }) => {
 
     const formData = new FormData();
     formData.append('report', file);
-    // Optional: get actual userId from localStorage if available
     const userData = JSON.parse(localStorage.getItem('user') || '{}');
     formData.append('userId', userData.email || 'guest');
 
@@ -50,11 +51,17 @@ const ExerciseUpload = ({ onAnalysisComplete }) => {
     }
   };
 
+  const handleStartExercises = () => {
+    if (extractedData && extractedData.exercises) {
+      navigate('/exercise/result', { state: { exercises: extractedData.exercises } });
+    }
+  };
+
   return (
     <div className="exercise-container">
       <h1 style={{ fontSize: '40px', marginBottom: '10px' }}>Step 1: Upload Report</h1>
       <p style={{ color: '#aaa', marginBottom: '30px' }}>
-        Upload your postpartum medical report. Our Gemini AI will analyse it to suggest the safest exercises for you.
+        Upload your postpartum medical report. We will analyse it to suggest the safest exercises for you.
       </p>
 
       {!extractedData ? (
@@ -63,7 +70,7 @@ const ExerciseUpload = ({ onAnalysisComplete }) => {
           {file ? (
             <p style={{ fontSize: '18px', color: '#ff9800' }}>Selected: <b>{file.name}</b></p>
           ) : (
-            <p>Click to browse or drag & drop your report (.pdf, .txt)</p>
+            <p>Click to browse or drag &amp; drop your report (.pdf, .txt)</p>
           )}
           <input
             id="reportInput"
@@ -90,7 +97,7 @@ const ExerciseUpload = ({ onAnalysisComplete }) => {
             <span style={{ color: '#ff9800', fontWeight: 'bold' }}>AI Reasoning:</span> "{extractedData.reasoning}"
           </div>
 
-          <button className="analyse-btn" onClick={() => onAnalysisComplete(extractedData.exercises)}>
+          <button className="analyse-btn" onClick={handleStartExercises}>
             Start Exercises Now →
           </button>
         </div>
@@ -104,7 +111,7 @@ const ExerciseUpload = ({ onAnalysisComplete }) => {
           onClick={handleUpload}
           disabled={loading || !file}
         >
-          {loading ? 'AI is Analysing...' : 'Analyse Report with Gemini AI'}
+          {loading ? '⏳ Analysing...' : 'Analyse Report'}
         </button>
       )}
     </div>

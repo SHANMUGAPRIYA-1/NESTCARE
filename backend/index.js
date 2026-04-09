@@ -3,9 +3,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const schedule = require("node-schedule");
+const axios = require("axios");
 
 const Register = require("./models/Register");
-const Vaccination = require("./models/Vaccination"); // ✅ Added
+const Vaccination = require("./models/Vaccination");
 const exerciseRoutes = require('./routes/exerciseRoutes');
 
 const app = express();
@@ -37,6 +39,7 @@ app.post("/register", async (req, res) => {
     deliveryType: formData.deliveryType,
     babyArrival: formData.babyArrival,
     babyDOB: formData.babyDOB,
+    mobileNo: formData.mobileNo,
   });
 
   try {
@@ -183,6 +186,74 @@ app.post("/api/schedule", async (req, res) => {
     res.status(500).json({ message: "Error generating schedule" });
   }
 });
+
+/* ==============================
+   FAST2SMS — Exercise Reminder
+   Sends SMS to one mobile number
+============================== */
+async function sendExerciseSMS(mobileNo, userName) {
+  const message =
+    `Hi ${userName}! 🌸 It's your 5PM exercise reminder from NestCare+. ` +
+    `Your daily postpartum exercises are ready. Stay consistent — every rep counts! 💪 Open the app and start your session now.`;
+
+  try {
+    const response = await axios.post(
+      'https://www.fast2sms.com/dev/bulkV2',
+      {
+        route: 'q',          // Quick / Transactional route — no DLT needed for testing
+        message,
+        language: 'english',
+        flash: 0,
+        numbers: String(mobileNo),
+      },
+      {
+        headers: {
+          authorization: process.env.FAST2SMS_KEY,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    console.log(`✅ SMS sent to ${mobileNo} (${userName}):`, response.data?.message);
+  } catch (err) {
+    console.error(
+      `❌ SMS failed for ${mobileNo} (${userName}):`,
+      err.response?.data || err.message
+    );
+  }
+}
+
+/* ==============================
+   SCHEDULER — Daily 5 PM IST
+   Cron: second minute hour ...
+   "0 0 17 * * *" = every day at 17:00:00
+============================== */
+schedule.scheduleJob('0 0 22 * * *', async () => {
+  console.log('⏰ [SMS Scheduler] Running daily 10 PM exercise reminder...');
+
+  try {
+    // Fetch only users who have a valid mobileNo stored
+    const users = await Register.find(
+      { mobileNo: { $exists: true, $ne: null, $type: 'number' } },
+      'name mobileNo'
+    );
+
+    console.log(`📋 Found ${users.length} user(s) with a mobile number.`);
+
+    for (const user of users) {
+      if (user.mobileNo && String(user.mobileNo).trim().length >= 10) {
+        await sendExerciseSMS(user.mobileNo, user.name || 'Mama');
+      } else {
+        console.log(`⚠️  Skipping ${user.name} — invalid/missing mobile number.`);
+      }
+    }
+
+    console.log('✅ [SMS Scheduler] All reminders processed.');
+  } catch (err) {
+    console.error('❌ [SMS Scheduler] Error fetching users:', err.message);
+  }
+});
+
+console.log('📅 Exercise reminder scheduler armed — fires daily at 5:00 PM IST.');
 
 /* ==============================
    START SERVER

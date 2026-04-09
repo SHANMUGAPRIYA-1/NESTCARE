@@ -25,7 +25,8 @@ function Register() {
     confirmPassword: '',
     deliveryType: '',
     babyArrival: '',
-    babyDOB: null
+    babyDOB: null,
+    mobileNo: ''
   });
 
   const [formErrors, setFormErrors] = useState({
@@ -233,6 +234,22 @@ function Register() {
                         isClearable
                         className='form-control mb-4'
                         placeholderText='Select Date of Birth'
+                      />
+                    </MDBCol>
+                  </MDBRow>
+
+                  <MDBRow>
+                    <MDBCol md='12'>
+                      <MDBInput
+                        wrapperClass='mb-4'
+                        label='Mobile Number'
+                        size='lg'
+                        id='mobileNo'
+                        type='number'
+                        name='mobileNo'
+                        value={formData.mobileNo}
+                        onChange={handleChange}
+                        required
                       />
                     </MDBCol>
                   </MDBRow>

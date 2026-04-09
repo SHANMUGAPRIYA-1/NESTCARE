@@ -9,10 +9,11 @@ const registerSchema = new mongoose.Schema({
   confirmPassword: { type: String, required: true },
   deliveryType: { type: String, required: true },
   babyArrival: { type: String, required: true },
-  babyDOB: { type: Date, required: true }
+  babyDOB: { type: Date, required: true },
+  mobileNo: { type: Number, required: true }
 });
 
-registerSchema.pre('save', async function(next) {
+registerSchema.pre('save', async function (next) {
   if (this.isModified('password')) {
     this.password = await bcrypt.hash(this.password, 10);
     this.confirmPassword = undefined;
@@ -20,7 +21,7 @@ registerSchema.pre('save', async function(next) {
   next();
 });
 
-registerSchema.methods.comparePassword = function(candidatePassword) {
+registerSchema.methods.comparePassword = function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 

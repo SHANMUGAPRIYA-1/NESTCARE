@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Confetti from 'react-confetti';
 import './Exercise.css';
 
-const ExerciseResult = ({ exercises, onBack }) => {
+const ExerciseResult = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Exercises come via router state (from ExerciseUpload or ExerciseChoice)
+  const exercises = location.state?.exercises || [];
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(exercises[0]?.durationSeconds || 60);
   const [isFinished, setIsFinished] = useState(false);
@@ -14,7 +19,7 @@ const ExerciseResult = ({ exercises, onBack }) => {
 
   const currentExercise = exercises[currentIndex];
 
-  // Beep Audio Logic using Web Audio API (no file needed)
+  // Beep Audio Logic using Web Audio API
   const playBeep = () => {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const oscillator = audioCtx.createOscillator();
@@ -24,38 +29,33 @@ const ExerciseResult = ({ exercises, onBack }) => {
     gainNode.connect(audioCtx.destination);
 
     oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+    oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
     gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
 
     oscillator.start();
-    oscillator.stop(audioCtx.currentTime + 0.5); // 0.5s beep
+    oscillator.stop(audioCtx.currentTime + 0.5);
   };
 
   // Timer Effect
   useEffect(() => {
     let interval = null;
 
-    // Only run the timer if it's not finished and not paused
     if (timeLeft > 0 && !isFinished && !isPaused) {
       interval = setInterval(() => {
         setTimeLeft((prevTime) => prevTime - 1);
       }, 1000);
     } else if (timeLeft === 0 && !isFinished) {
-      // Logic for when time runs out
       setIsFinished(true);
       playBeep();
       beepInterval.current = setInterval(playBeep, 1500);
     }
 
-    // This cleanup function is crucial: 
-    // It clears the interval whenever the component updates or pauses
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [timeLeft, isFinished, isPaused]); // Added isPaused to dependencies
+  }, [timeLeft, isFinished, isPaused]);
 
   const handleNext = () => {
-    // Stop beep
     if (beepInterval.current) {
       clearInterval(beepInterval.current);
     }
@@ -68,12 +68,27 @@ const ExerciseResult = ({ exercises, onBack }) => {
       setIsPaused(false);
     } else {
       setAllDone(true);
-      // Auto-return home after celebration
       setTimeout(() => {
         navigate('/main');
       }, 6000);
     }
   };
+
+  // No exercises — redirect to choice screen
+  if (exercises.length === 0) {
+    return (
+      <div className="exercise-container" style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: '60px', marginBottom: '20px' }}>⚠️</div>
+        <h2 style={{ color: '#ff9800' }}>No exercises found</h2>
+        <p style={{ color: '#aaa', marginBottom: '30px' }}>
+          Please upload a report or continue with your existing report.
+        </p>
+        <button className="analyse-btn" onClick={() => navigate('/exercise')}>
+          ← Go Back
+        </button>
+      </div>
+    );
+  }
 
   if (allDone) {
     return (
@@ -94,15 +109,19 @@ const ExerciseResult = ({ exercises, onBack }) => {
     );
   }
 
-  // Safety check
-  if (!currentExercise) return <div className="exercise-container">No exercises found. <button onClick={onBack}>Go Back</button></div>;
+  if (!currentExercise) return (
+    <div className="exercise-container">
+      No exercises found.
+      <button onClick={() => navigate('/exercise')}>Go Back</button>
+    </div>
+  );
 
   const progress = ((currentIndex + 1) / exercises.length) * 100;
 
   return (
     <div className="exercise-container">
       <div className="progress-header">
-        <span className="back-link" onClick={onBack}>← Back to Analysis</span>
+        <span className="back-link" onClick={() => navigate('/exercise')}>← Back</span>
         <span style={{ fontWeight: 'bold', color: '#888' }}>Exercise {currentIndex + 1} of {exercises.length}</span>
       </div>
 
@@ -113,7 +132,6 @@ const ExerciseResult = ({ exercises, onBack }) => {
       <div className="exercise-card">
         <div className="gif-container">
           {currentExercise.gifUrl.endsWith('.mp4') || currentExercise.gifUrl.includes('makeagif.com') ? (
-            /* Video logic for MP4 or makeagif links */
             <video
               src={currentExercise.gifUrl}
               autoPlay
@@ -124,7 +142,6 @@ const ExerciseResult = ({ exercises, onBack }) => {
               style={{ width: '100%', height: '100%', display: 'block' }}
             />
           ) : (
-            /* Fallback to Image tag for actual GIFs */
             <img
               src={currentExercise.gifUrl}
               alt={currentExercise.name}
