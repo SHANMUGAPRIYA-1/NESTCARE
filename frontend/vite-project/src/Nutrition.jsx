@@ -29,9 +29,6 @@ function Nutrition() {
         </div>
         <div className="start">IMAGINE ATTAINING THE <em>BEST</em> OF YOUR FITNESS</div>
         <div className="btn">
-        <Link to="/weekly-plan">
-        <button className="button-52" role="button">Weekly Plan</button>
-      </Link>
       <Link to="/recommendation">
         <button className="button-53" role="button">Recommendation</button>
       </Link>
