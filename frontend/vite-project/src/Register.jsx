@@ -19,14 +19,15 @@ function Register() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    email: "",
-    name: "",
-    age: "",
-    password: "",
-    confirmPassword: "",
-    deliveryType: "",
-    babyArrival: "",
+    email: '',
+    name: '',
+    age: '',
+    password: '',
+    confirmPassword: '',
+    deliveryType: '',
+    babyArrival: '',
     babyDOB: null,
+    mobileNo: ''
   });
 
   const [formErrors, setFormErrors] = useState({
@@ -234,6 +235,22 @@ function Register() {
                     className="form-control mb-4"
                     placeholderText="Select Date of Birth"
                   />
+
+                  <MDBRow>
+                    <MDBCol md='12'>
+                      <MDBInput
+                        wrapperClass='mb-4'
+                        label='Mobile Number'
+                        size='lg'
+                        id='mobileNo'
+                        type='number'
+                        name='mobileNo'
+                        value={formData.mobileNo}
+                        onChange={handleChange}
+                        required
+                      />
+                    </MDBCol>
+                  </MDBRow>
 
                   <div className="text-center">
                     <MDBBtn size="lg" type="submit">

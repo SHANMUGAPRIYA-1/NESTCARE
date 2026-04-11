@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import BodyCare from "./BodyCare";
 import Nutrition from "./Nutrition";
 import Breastfeeding from "./Breastfeeding";
-import Exercise from "./Exercise";
 import Profile from "./Profile";
 import useSpeech from "./useSpeech";
 import ChatBot from "./Chatbot";
@@ -129,12 +128,34 @@ const Home = () => {
     { src: "src/assets/bodycare.jpg", name: "Body Care" },
   ];
 
+  const navigate = useNavigate();
+
   const handleImageClick = (index) => {
-    const name = images[index].name;
-    if (name === "Exercises") setCurrentPage("exercises");
-    else if (name === "Nutrition & Hydration") setCurrentPage("nutrition");
-    else if (name === "Breast Feeding") setCurrentPage("breastfeeding");
-    else if (name === "Body Care") setCurrentPage("bodycare");
+    const clickedImageName = images[index].name;
+    switch (clickedImageName) {
+      case "Body Care":
+        setCurrentPage("bodycare");
+        break;
+      case "Nutrition & Hydration":
+        setCurrentPage("nutrition");
+        break;
+      case "Breast Feeding":
+        setCurrentPage("breastfeeding");
+        break;
+      case "Exercises":
+        navigate("/exercise");
+        break;
+      default:
+        setClickedImage(index);
+    }
+  };
+
+  const handleProfileClick = () => {
+    setCurrentPage("profile");
+  };
+
+  const handleHomeClick = () => {
+    setCurrentPage("home");
   };
 
   return (
@@ -175,15 +196,16 @@ const Home = () => {
             </div>
           ))}
         </div>
-      )}
+      ) : currentPage === "profile" ? (
+        <Profile />
+      ) : currentPage === "bodycare" ? (
+        <BodyCare />
+      ) : currentPage === "nutrition" ? (
+        <Nutrition />
+      ) : currentPage === "breastfeeding" ? (
+        <Breastfeeding />
+      ) : null}
 
-      {currentPage === "profile" && <Profile />}
-      {currentPage === "exercises" && <Exercise />}
-      {currentPage === "bodycare" && <BodyCare />}
-      {currentPage === "nutrition" && <Nutrition />}
-      {currentPage === "breastfeeding" && <Breastfeeding />}
-
-      {/* CHAT BUTTON */}
       <button
         style={styles.chatButton}
         onClick={() => setShowChat(true)}
