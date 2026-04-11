@@ -2,14 +2,18 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-
+require('dotenv').config();
 const Register = require("./models/Register");
 const Vaccination = require("./models/Vaccination"); // ✅ Added
+// Move this here to ensure body-parser is ready
 
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json());
+const chatbotRoute = require("./chatbot");
+app.use("/api", chatbotRoute);
 
 /* ==============================
    MongoDB Connection
@@ -184,7 +188,7 @@ app.post("/api/schedule", async (req, res) => {
 /* ==============================
    START SERVER
 ============================== */
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server is running on port: ${PORT}`);
