@@ -1,5 +1,12 @@
-import { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+  useLocation
+} from 'react-router-dom';
+
 import Nutrition from './Nutrition';
 import WeeklyPlan from './WeeklyPlan';
 import ExerciseChoice from './ExerciseChoice';
@@ -11,8 +18,44 @@ import WaterTracker from './WaterTracker';
 import VaccinationSchedule from './VaccinationSchedule';
 import Login from './Login';
 import Register from './Register';
-import './App.css';
 import Home from './Home';
+
+import './App.css';
+
+/* 🔊 GLOBAL VOICE READER */
+function VoiceReader() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const speakPage = () => {
+      const text = document.body.innerText;
+      if (!text) return;
+
+      // Stop previous speech
+      window.speechSynthesis.cancel();
+
+      const speech = new SpeechSynthesisUtterance(text);
+      speech.lang = "en-US";
+      speech.rate = 0.95;
+      speech.pitch = 1;
+      speech.volume = 1;
+
+      window.speechSynthesis.speak(speech);
+    };
+
+    // Delay so page loads fully
+    const timer = setTimeout(() => {
+      speakPage();
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+      window.speechSynthesis.cancel();
+    };
+  }, [location]);
+
+  return null;
+}
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -26,6 +69,9 @@ function App() {
 
   return (
     <Router>
+      {/* 🔊 Auto Voice For All Pages */}
+      <VoiceReader />
+
       <Routes>
         <Route path="/nutrition" element={isAuthenticated ? <Nutrition /> : <Navigate to="/" />} />
         <Route path="/weekly-plan" element={isAuthenticated ? <WeeklyPlan /> : <Navigate to="/" />} />

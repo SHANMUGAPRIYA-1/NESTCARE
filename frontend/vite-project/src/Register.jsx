@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import 'mdb-react-ui-kit/dist/css/mdb.min.css';
+import { useState } from "react";
+import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import {
   MDBBtn,
@@ -9,14 +9,15 @@ import {
   MDBCard,
   MDBCardBody,
   MDBInput,
-  MDBRadio
-} from 'mdb-react-ui-kit';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { useNavigate } from 'react-router-dom';
+  MDBRadio,
+} from "mdb-react-ui-kit";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: '',
     name: '',
@@ -30,7 +31,7 @@ function Register() {
   });
 
   const [formErrors, setFormErrors] = useState({
-    confirmPassword: ''
+    confirmPassword: "",
   });
 
   const handleChange = (e) => {
@@ -44,32 +45,47 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Password validation
     if (formData.password !== formData.confirmPassword) {
       setFormErrors({ confirmPassword: "Passwords do not match" });
       return;
     }
-    setFormErrors({ confirmPassword: '' });
+
+    setFormErrors({ confirmPassword: "" });
+
+    // Format date before sending
+    const formattedData = {
+      ...formData,
+      babyDOB: formData.babyDOB ? formData.babyDOB.toISOString() : null,
+    };
 
     try {
-      const response = await fetch('http://localhost:5001/register', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5001/register", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formattedData),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        console.log('Form data:', formData);
-        navigate('/'); // Updated navigation
+        // Save user data to localStorage (for Profile page)
+        localStorage.setItem(
+          "user",
+          JSON.stringify(data.user || formattedData),
+        );
+
+        alert("Registration Successful ✅");
+        navigate("/");
       } else {
-        const errorData = await response.json();
-        console.error('Error:', errorData);
-        alert('An error occurred during registration.');
+        alert(data.message || "Registration failed");
       }
     } catch (error) {
-      console.error('Error:', error);
-      alert('An error occurred during registration.');
+      console.error("Error:", error);
+      alert("Server error. Please try again.");
     }
   };
 
@@ -77,61 +93,56 @@ function Register() {
     <div
       style={{
         backgroundImage: `url('src/assets/register.png')`,
-        minHeight: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        width: '1550px',
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        width: "100%",
       }}
     >
       <MDBContainer>
-        <MDBRow className='justify-content-end align-items-center'>
-          <MDBCol md='8' lg='6' xl='5' className='ms-lg-auto'>
-            <MDBCard style={{ width: '100%' }}>
-              <MDBCardBody className='px-4'>
-                <h3 className="fw-bold mb-4 pb-2 pb-md-0 mb-md-5">Registration Form</h3>
+        <MDBRow className="justify-content-end align-items-center">
+          <MDBCol md="8" lg="6" xl="5" className="ms-lg-auto">
+            <MDBCard>
+              <MDBCardBody className="px-4">
+                <h3 className="fw-bold mb-4">Registration Form</h3>
+
                 <form onSubmit={handleSubmit}>
-                  <MDBRow>
-                    <MDBCol md='12'>
-                      <MDBInput
-                        wrapperClass='mb-4'
-                        label='Email'
-                        size='lg'
-                        id='email'
-                        type='email'
-                        name='email'
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                      />
-                    </MDBCol>
-                  </MDBRow>
+                  <MDBInput
+                    wrapperClass="mb-4"
+                    label="Email"
+                    size="lg"
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
 
                   <MDBRow>
-                    <MDBCol md='6'>
+                    <MDBCol md="6">
                       <MDBInput
-                        wrapperClass='mb-4'
-                        label='Name'
-                        size='lg'
-                        id='name'
-                        type='text'
-                        name='name'
+                        wrapperClass="mb-4"
+                        label="Name"
+                        size="lg"
+                        type="text"
+                        name="name"
                         value={formData.name}
                         onChange={handleChange}
                         required
                       />
                     </MDBCol>
-                    <MDBCol md='6'>
+
+                    <MDBCol md="6">
                       <MDBInput
-                        wrapperClass='mb-4'
-                        label='Age'
-                        size='lg'
-                        id='age'
-                        type='number'
-                        name='age'
-                        min='0'
+                        wrapperClass="mb-4"
+                        label="Age"
+                        size="lg"
+                        type="number"
+                        name="age"
+                        min="0"
                         value={formData.age}
                         onChange={handleChange}
                         required
@@ -140,103 +151,90 @@ function Register() {
                   </MDBRow>
 
                   <MDBRow>
-                    <MDBCol md='6'>
+                    <MDBCol md="6">
                       <MDBInput
-                        wrapperClass='mb-4'
-                        label='Password'
-                        size='lg'
-                        id='password'
-                        type='password'
-                        name='password'
+                        wrapperClass="mb-4"
+                        label="Password"
+                        size="lg"
+                        type="password"
+                        name="password"
                         value={formData.password}
                         onChange={handleChange}
                         required
                       />
                     </MDBCol>
-                    <MDBCol md='6'>
+
+                    <MDBCol md="6">
                       <MDBInput
-                        wrapperClass='mb-4'
-                        label='Confirm Password'
-                        size='lg'
-                        id='confirmPassword'
-                        type='password'
-                        name='confirmPassword'
+                        wrapperClass="mb-4"
+                        label="Confirm Password"
+                        size="lg"
+                        type="password"
+                        name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={handleChange}
                         required
-                        onBlur={() => {
-                          if (formData.password !== formData.confirmPassword) {
-                            setFormErrors({ confirmPassword: "Passwords do not match" });
-                          } else {
-                            setFormErrors({ confirmPassword: '' });
-                          }
-                        }}
                       />
                       {formErrors.confirmPassword && (
-                        <div className="text-danger">{formErrors.confirmPassword}</div>
+                        <div className="text-danger">
+                          {formErrors.confirmPassword}
+                        </div>
                       )}
                     </MDBCol>
                   </MDBRow>
 
-                  <MDBRow>
-                    <MDBCol md='6'>
-                      <h6 className="fw-bold mb-2">Delivery Type: </h6>
+                  <MDBRow className="mb-3">
+                    <MDBCol md="6">
+                      <h6>Delivery Type:</h6>
                       <MDBRadio
-                        name='deliveryType'
-                        id='deliveryNormal'
-                        value='Normal'
-                        label='Normal'
+                        name="deliveryType"
+                        value="Normal"
+                        label="Normal"
                         inline
                         onChange={handleChange}
-                        checked={formData.deliveryType === 'Normal'}
+                        checked={formData.deliveryType === "Normal"}
                       />
                       <MDBRadio
-                        name='deliveryType'
-                        id='deliveryCSection'
-                        value='C-Section'
-                        label='C-Section'
+                        name="deliveryType"
+                        value="C-Section"
+                        label="C-Section"
                         inline
                         onChange={handleChange}
-                        checked={formData.deliveryType === 'C-Section'}
+                        checked={formData.deliveryType === "C-Section"}
                       />
                     </MDBCol>
-                    <MDBCol md='6'>
-                      <h6 className="fw-bold mb-2">Baby Arrival: </h6>
+
+                    <MDBCol md="6">
+                      <h6>Baby Arrival:</h6>
                       <MDBRadio
-                        name='babyArrival'
-                        id='babyArrivalYes'
-                        value='Yes'
-                        label='Yes'
+                        name="babyArrival"
+                        value="Yes"
+                        label="Yes"
                         inline
                         onChange={handleChange}
-                        checked={formData.babyArrival === 'Yes'}
+                        checked={formData.babyArrival === "Yes"}
                       />
                       <MDBRadio
-                        name='babyArrival'
-                        id='babyArrivalNo'
-                        value='No'
-                        label='No'
+                        name="babyArrival"
+                        value="No"
+                        label="No"
                         inline
                         onChange={handleChange}
-                        checked={formData.babyArrival === 'No'}
+                        checked={formData.babyArrival === "No"}
                       />
                     </MDBCol>
                   </MDBRow>
 
-                  <MDBRow>
-                    <MDBCol md='12'>
-                      <h6 className="fw-bold mb-2">Baby DOB: </h6>
-                      <DatePicker
-                        selected={formData.babyDOB}
-                        onChange={handleDateChange}
-                        dateFormat='dd/MM/yyyy'
-                        maxDate={new Date()}
-                        isClearable
-                        className='form-control mb-4'
-                        placeholderText='Select Date of Birth'
-                      />
-                    </MDBCol>
-                  </MDBRow>
+                  <h6>Baby DOB:</h6>
+                  <DatePicker
+                    selected={formData.babyDOB}
+                    onChange={handleDateChange}
+                    dateFormat="dd/MM/yyyy"
+                    maxDate={new Date()}
+                    isClearable
+                    className="form-control mb-4"
+                    placeholderText="Select Date of Birth"
+                  />
 
                   <MDBRow>
                     <MDBCol md='12'>
@@ -255,7 +253,9 @@ function Register() {
                   </MDBRow>
 
                   <div className="text-center">
-                    <MDBBtn className='mb-4' size='lg' type='submit'>Submit</MDBBtn>
+                    <MDBBtn size="lg" type="submit">
+                      Submit
+                    </MDBBtn>
                   </div>
                 </form>
               </MDBCardBody>

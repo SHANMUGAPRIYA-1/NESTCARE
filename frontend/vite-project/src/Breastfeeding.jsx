@@ -1,6 +1,8 @@
-import  { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import styled, { createGlobalStyle } from "styled-components";
-// Global styles to remove default margins and padding
+import useSpeech from "./useSpeech"; // ✅ Adjust path if needed
+
+// Global styles
 const GlobalStyle = createGlobalStyle`
   body, html {
     margin: 0;
@@ -80,7 +82,9 @@ const Step = styled.div`
   border-radius: 8px;
   width: 100%;
   height: 300px;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
 
   &:hover {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
@@ -141,7 +145,7 @@ const StepPoint = styled.li`
   line-height: 1.5;
 `;
 
-// Define the steps data
+// Steps Data (UNCHANGED)
 const steps = [
   {
     title: "Step 1: Get Comfortable",
@@ -220,10 +224,25 @@ const steps = [
 const Breastfeeding = () => {
   const [selectedStep, setSelectedStep] = useState(0);
   const sectionRefs = useRef([]);
+  const { speak, stop, pause, resume, isSpeaking, isPaused } = useSpeech(); // ✅ Use full speech API
 
   const handleSidebarClick = (index) => {
     setSelectedStep(index);
     sectionRefs.current[index].scrollIntoView({ behavior: "smooth" });
+
+    const step = steps[index];
+    const textToRead = step.title + ". " + step.description.join(". ");
+    speak(textToRead);
+  };
+
+  // 🔊 Voice Button Handler
+  const handleVoice = () => {
+    const step = steps[selectedStep];
+    const textToRead = step.title + ". " + step.description.join(". ");
+
+    if (!isSpeaking) speak(textToRead);
+    else if (isSpeaking && !isPaused) pause();
+    else resume();
   };
 
   return (
@@ -232,6 +251,17 @@ const Breastfeeding = () => {
       <AppContainer>
         <Sidebar>
           <Title>Breastfeeding Guide</Title>
+
+          {/* 🔊 Voice Buttons */}
+          <div style={{ marginBottom: "20px" }}>
+            <button onClick={handleVoice}>
+              {!isSpeaking ? "🔊 Listen" : isPaused ? "▶ Resume" : "⏸ Pause"}
+            </button>
+            <button onClick={stop} style={{ marginLeft: "10px", color: "red" }}>
+              ⏹ Stop
+            </button>
+          </div>
+
           {steps.map((step, index) => (
             <SidebarItem
               key={index}
@@ -244,6 +274,7 @@ const Breastfeeding = () => {
             </SidebarItem>
           ))}
         </Sidebar>
+
         <GuideContainer>
           {steps.map((step, index) => (
             <Section
@@ -273,5 +304,4 @@ const Breastfeeding = () => {
     </>
   );
 };
-
 export default Breastfeeding;

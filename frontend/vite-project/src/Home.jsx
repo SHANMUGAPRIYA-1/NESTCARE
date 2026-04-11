@@ -4,10 +4,47 @@ import BodyCare from "./BodyCare";
 import Nutrition from "./Nutrition";
 import Breastfeeding from "./Breastfeeding";
 import Profile from "./Profile";
+import useSpeech from "./useSpeech";
+import ChatBot from "./Chatbot";
 
 const Home = () => {
   const [clickedImage, setClickedImage] = useState(null);
-  const [currentPage, setCurrentPage] = useState("home");
+  const { speak, stop } = useSpeech();
+
+  // 🔊 Load voices once
+  useEffect(() => {
+    window.speechSynthesis.getVoices();
+  }, []);
+
+  // 🔊 Page text to speak
+  const pageIds = {
+    home: "home-content",
+    exercises: "exercise-content",
+    nutrition: "nutrition-content",
+    bodycare: "bodycare-content",
+    breastfeeding: "breastfeeding-content",
+  };
+
+  const speakPage = () => {
+    window.speechSynthesis.cancel();
+    const elementId = pageIds[currentPage];
+    const element = document.getElementById(elementId);
+
+    if (!element) {
+      alert("No content found to read!");
+      return;
+    }
+
+    const pageText = element.innerText.trim();
+    if (!pageText) {
+      alert("Page content is empty!");
+      return;
+    }
+
+    speak(pageText);
+  };
+  const [showChat, setShowChat] = useState(false);
+  const [chatButtonHover, setChatButtonHover] = useState(false);
 
   const styles = {
     header: {
@@ -49,8 +86,52 @@ const Home = () => {
       backgroundColor: "#ffffff",
       color: "#000000",
       marginTop: "10px",
-      transition: "background-color 0.3s ease, transform 0.2s ease",
-      boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+      transition: "background-color 0.3s, transform 0.2s",
+      boxShadow: "0px 2px 4px rgba(0,0,0,0.1)",
+    },
+    chatButton: {
+      position: "fixed",
+      bottom: "20px",
+      right: "20px",
+      width: "70px",
+      height: "70px",
+      borderRadius: "50%",
+      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      color: "#fff",
+      border: "none",
+      cursor: "pointer",
+      fontSize: "28px",
+      boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.3)",
+      zIndex: 1000,
+      transition: "transform 0.3s ease, box-shadow 0.3s ease",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    chatButtonHover: {
+      transform: "scale(1.1)",
+      boxShadow: "0px 12px 30px rgba(0, 0, 0, 0.4)",
+    },
+    modal: {
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 1001,
+    },
+    modalContent: {
+      backgroundColor: "#fff",
+      borderRadius: "12px",
+      padding: "20px",
+      maxWidth: "600px",
+      width: "90%",
+      maxHeight: "80%",
+      overflow: "auto",
     },
     body: {
       display: "grid",
@@ -234,6 +315,33 @@ const Home = () => {
       ) : currentPage === "breastfeeding" ? (
         <Breastfeeding />
       ) : null}
+
+      <button
+        style={{
+          ...styles.chatButton,
+          ...(chatButtonHover ? styles.chatButtonHover : {}),
+        }}
+        onClick={() => setShowChat(true)}
+        onMouseEnter={() => setChatButtonHover(true)}
+        onMouseLeave={() => setChatButtonHover(false)}
+      >
+        💬
+      </button>
+
+      {showChat && (
+        <div style={styles.modal} onClick={() => setShowChat(false)}>
+          <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <ChatBot onClose={() => setShowChat(false)} />
+          </div>
+        </div>
+      )}
+      )}
+
+      {currentPage === "profile" && <Profile />}
+      {currentPage === "exercises" && <Exercise />}
+      {currentPage === "bodycare" && <BodyCare />}
+      {currentPage === "nutrition" && <Nutrition />}
+      {currentPage === "breastfeeding" && <Breastfeeding />}
     </div>
   );
 };
