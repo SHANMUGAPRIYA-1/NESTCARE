@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import BodyCare from "./BodyCare";
 import Nutrition from "./Nutrition";
 import Breastfeeding from "./Breastfeeding";
-import Exercise from "./Exercise";
 import Profile from "./Profile";
 import useSpeech from "./useSpeech";
 import ChatBot from "./Chatbot";
@@ -229,6 +228,8 @@ const Home = () => {
     }
   };
 
+  const navigate = useNavigate();
+
   const handleImageClick = (index) => {
     const clickedImageName = images[index].name;
     switch (clickedImageName) {
@@ -242,7 +243,7 @@ const Home = () => {
         setCurrentPage("breastfeeding");
         break;
       case "Exercises":
-        setCurrentPage("exercises");
+        navigate("/exercise");
         break;
       default:
         setClickedImage(index);
@@ -307,8 +308,6 @@ const Home = () => {
         </div>
       ) : currentPage === "profile" ? (
         <Profile />
-      ) : currentPage === "exercises" ? (
-        <Exercise />
       ) : currentPage === "bodycare" ? (
         <BodyCare />
       ) : currentPage === "nutrition" ? (

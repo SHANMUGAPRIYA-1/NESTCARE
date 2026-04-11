@@ -10,7 +10,8 @@ require('dotenv').config();
 const Meal = require('./models/Meal');
 const WaterReminder = require('./models/WaterReminder');
 const Vaccination = require('./models/Vaccination');
-const Register = require('./models/Register'); // Add this line
+const Register = require('./models/Register');
+const exerciseRoutes = require('./routes/exerciseRoutes'); // Exercise feature
 
 const app = express();
 

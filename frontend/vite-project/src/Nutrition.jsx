@@ -80,23 +80,12 @@ function Nutrition() {
         </div>
 
         <div className="btn">
-          <Link to="/weekly-plan">
-            <button className="button-52" role="button">
-              Weekly Plan
-            </button>
-          </Link>
-
-          <Link to="/recommendation">
-            <button className="button-53" role="button">
-              Recommendation
-            </button>
-          </Link>
-
-          <Link to="/recipe">
-            <button className="button-54" role="button">
-              Recipe
-            </button>
-          </Link>
+      <Link to="/recommendation">
+        <button className="button-53" role="button">Recommendation</button>
+      </Link>
+      <Link to="/recipe">
+        <button className="button-54" role="button">Recipe</button>
+      </Link>
         </div>
 
         <div className="hydra">

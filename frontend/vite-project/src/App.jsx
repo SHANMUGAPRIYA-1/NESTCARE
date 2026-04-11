@@ -9,6 +9,9 @@ import {
 
 import Nutrition from './Nutrition';
 import WeeklyPlan from './WeeklyPlan';
+import ExerciseChoice from './ExerciseChoice';
+import ExerciseUpload from './ExerciseUpload';
+import ExerciseResult from './ExerciseResult';
 import Recommendation from './Recommendation';
 import Recipe from './Recipe';
 import WaterTracker from './WaterTracker';
@@ -55,7 +58,10 @@ function VoiceReader() {
 }
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    // Check localStorage for existing user session
+    return !!localStorage.getItem('user');
+  });
 
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
@@ -76,6 +82,9 @@ function App() {
         <Route path="/" element={<Login onLoginSuccess={handleLoginSuccess} />} />
         <Route path="/main" element={isAuthenticated ? <Home /> : <Navigate to="/" />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/exercise" element={<ExerciseChoice />} />
+        <Route path="/exercise/upload" element={<ExerciseUpload />} />
+        <Route path="/exercise/result" element={<ExerciseResult />} />
       </Routes>
     </Router>
   );
